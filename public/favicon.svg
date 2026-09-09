@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" role="img" aria-label="Вывеска">
+  <rect width="16" height="16" rx="3.5" fill="#ebe7e0"/>
+  <path fill="#142824" fill-rule="evenodd" d="M3.5 13.5 6.6 3.5h2.8l3.1 10H10.8l-.55-1.9H5.75l-.55 1.9H3.5Zm4.5-7.6.7 2.4H7.3l.7-2.4Z"/>
+  <path fill="#1e3a34" fill-rule="evenodd" d="M2.5 12.5 5.6 2.5h2.8l3.1 10H9.8l-.55-1.9H5.75l-.55 1.9H2.5Zm4.5-7.6.7 2.4H6.3l.7-2.4Z"/>
+</svg>

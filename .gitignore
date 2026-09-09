@@ -1,0 +1,15 @@
+node_modules/
+.vercel/
+.tanstack/
+.grok/*
+!.grok/app-env.json
+screenshots/
+artifacts/
+derived/
+build/
+*.ipa
+.DS_Store
+ios/Vyveska/www/**
+!ios/Vyveska/www/.gitkeep
+.env
+.env.*

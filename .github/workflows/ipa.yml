@@ -1,0 +1,77 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  ipa:
+    runs-on: macos-14
+    timeout-minutes: 40
+    env:
+      VITE_AUTH_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install JS deps
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Export web bundle into the iOS app
+        run: node scripts/ios-web-export.mjs
+
+      - name: App icon
+        run: |
+          mkdir -p ios/Vyveska/Assets.xcassets/AppIcon.appiconset
+          SRC="public/__grok/icon-180.png"
+          if [ ! -f "$SRC" ]; then SRC="public/favicon.svg"; fi
+          sips -s format png -z 1024 1024 "$SRC" --out ios/Vyveska/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate --spec ios/project.yml
+
+      - name: Build unsigned iOS app
+        run: |
+          xcodebuild \
+            -project Vyveska.xcodeproj \
+            -scheme Vyveska \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath derived \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=- \
+            DEVELOPMENT_TEAM= \
+            build
+
+      - name: Pack IPA
+        run: |
+          APP=$(find derived -name 'Vyveska.app' -type d | head -n 1)
+          test -n "$APP"
+          rm -rf Payload Vyveska.ipa
+          mkdir Payload
+          cp -R "$APP" Payload/
+          zip -r Vyveska.ipa Payload
+          ls -lh Vyveska.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Vyveska-ipa
+          path: Vyveska.ipa
+          if-no-files-found: error
+          retention-days: 14
