@@ -43,12 +43,13 @@ jobs:
         run: brew install xcodegen
 
       - name: Generate Xcode project
-        run: xcodegen generate --spec ios/project.yml
+        working-directory: ios
+        run: xcodegen generate
 
       - name: Build unsigned iOS app
         run: |
           xcodebuild \
-            -project Vyveska.xcodeproj \
+            -project ios/Vyveska.xcodeproj \
             -scheme Vyveska \
             -configuration Release \
             -sdk iphoneos \
